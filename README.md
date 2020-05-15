@@ -1,4 +1,4 @@
-# O Algoritmo que separa os meninos dos homens. (tic-tac-toe-game)
+# Joga da Velha usando a linguagem C
  Jogo da velha na linguagem C.
    ### Conceitos Usados:
     - Escrita e Leitura;
