@@ -5,6 +5,6 @@
    - custom console
 
 ## TO-DO
-   [] Add minmax algorithm to simulate IA
-   [] Organize code into files
-   [] Refatory
+   - [ ] Add minmax algorithm to simulate IA
+   - [ ] Organize code into files
+   - [ ] Refatory
