@@ -8,3 +8,4 @@
    - [ ] Add minmax algorithm to simulate IA
    - [ ] Organize code into files
    - [ ] Refatory
+   - [ ] Criar uma bilbioteca para o jogo 
