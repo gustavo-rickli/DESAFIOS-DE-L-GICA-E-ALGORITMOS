@@ -8,7 +8,7 @@
 #define FALSE 0;
 
 // players simbols
-char symbolsOnMove[4] = {'X', 'O', 'X', '#'};
+char symbolsOnMove[2] = {'X', 'O'};
 
 // array 0 - 8, This array represents tic-tac-toe game table.
 int tablePositions[9];
@@ -16,8 +16,12 @@ int tablePositions[9];
 int playerTurn = 1; // This variable is used how key to valid which player will play.
 
 // array to storage the players name.
-char player1[10];
-char player2[10];
+char player1[10] = "";
+char player2[10] = "";
+char winner[10];
+
+// procedure to get winner player
+void winnerPlayer(int idPlayer);
 
 // variable to close program.
 char stopProgram;
@@ -28,7 +32,7 @@ char playerName(void);
 void receiveName(void);
 
 // print player name.
-char * printNamePlayer(void);
+char* printNamePlayer(void);
 
 // procedure for valid which player will play.
 void validTurn(void);
@@ -52,7 +56,7 @@ int valueMoves(void);
 void insertValueInTable(void);
 
 // procedure to testing moves.
-int testingMoves(void);
+int testingMoves(int playerTurn);
 
 // procedure to validation draw.
 int drawCase(void);
@@ -60,10 +64,7 @@ int drawCase(void);
 // storage the historic matches
 // index 0 - Player 1 historic
 // index 1 - Player 2 historic
-// -----------------
-// index 2 - Player In matches with IA
-// index 3 - IA points
-int matchesHistoric[4];
+int matchesHistoric[2];
 void printHistoricMatches(void);
 
 // procedure to valid which player win.
@@ -106,18 +107,8 @@ void alterNamePlayer(void);
 // procedure to alter symbols used in game
 void alterSymbols(void);
 
-
-// aqui ficara o jogo contra a IA.
-void playerVsIaGame(void);
-
-// aqui sera processada a jogada que a IA ira fazer.
-void IAMove(void);
-
 // funcao para retornar o movimento que a IA ira escolher
 int testMoves();
-
-// funcao recursiva para encontrar o melhor movimento baseada no algoritmo Minimax
-int algorithRecursive(int table[], int profundidade, int playerMove);
 
 int main() {
 
@@ -166,26 +157,21 @@ void gameOptions(void) {
 				break;
 
 			case 2:
-				playerVsIaGame();
-				leaveLoop = 0;
-				break;
-
-			case 3:
 				optionsConsole();
 				leaveLoop = 0;
 				break;
 
-			case 4:
+			case 3:
 				printHistoricMatches();
 				leaveLoop = 0;
 				break;
 
-			case 5:
+			case 4:
 				alterNamePlayer();
 				leaveLoop = 0;
 				break;
 
-			case 6:
+			case 5:
 				alterSymbols();
 				leaveLoop = 0;
 				break;
@@ -309,9 +295,6 @@ void printHistoricMatches(void) {
 	printf("\tPLAYER 1\tPLAYER 2\n");
 	printf("\t\t%d\t\t%d\n", matchesHistoric[0], matchesHistoric[1]);
 	printf("\n\n");
-	printf("\tPLAYER\t\tIA\n");
-	printf("\t\t%d\t\t%d\t", matchesHistoric[2], matchesHistoric[3]);
-	printf("\n\n");
 	printf("-> Pressione qualquer tecla para sair: ");
 	getchar();
 
@@ -332,8 +315,7 @@ void alterSymbols(void) {
 		system("cls");
 		printMenu();
 
-		printf("\t[1] Jogador 1\tJ[2] Jogador 2\n\t\t%c\t\t%c\n\n", symbolsOnMove[0], symbolsOnMove[1]);
-		printf("\t[3] Humano\t\t[4] Inteligencia Artificial\n\t\t%c\t\t%c\n\n", symbolsOnMove[2], symbolsOnMove[3]);
+		printf("\t[1] Jogador 1\t[2] Jogador 2\n\t\t%c\t\t%c\n\n", symbolsOnMove[0], symbolsOnMove[1]);
 
 		printf(" -> Qual simbolo deseja alterar? - Digite [l] ou [L] para sair\n");
 		printf(" => ");
@@ -360,14 +342,6 @@ void alterSymbols(void) {
 					symbolsOnMove[1] = symbol;
 					break;
 
-				case '3':
-					symbolsOnMove[2] = symbol;
-					break;
-
-				case '4':
-					symbolsOnMove[3] = symbol;
-					break;
-				
 				default:
 					break;
 			}
@@ -376,136 +350,16 @@ void alterSymbols(void) {
 	} while(option != 'l' && option != 'L');
 }
 
-void playerVsIaGame(void) {
-	int counter;
-
-	// aqui estou salvando os nomes originais para
-	// depois do jogo contra a IA repassar esses nomes novamente.
-	char playerName[10];
-	char playerTwoName[10];
- 
-	strcpy(playerName, player1);
-	strcpy(playerTwoName, player2);
-
-	strcpy(player1, "Jogador");
-	strcpy(player2, "R2D2");
-
-	// procedimento para iniciar a tabela do jogo
-	initTable();
-	
-	for (counter = 0; counter <= 8; counter += 2) {
-		
-		do {
-		
-			system("cls");
-			printf("\nEstado atual da tabela\n");
-			printTable(symbolsOnMove[2], symbolsOnMove[3]);
-			printf("\nPosicoes da tabela\n");
-			printfPositions();
-			printf("\nJogador digite a posicao a qual queira jogar: ");
-			scanf("%d", &playerMovement);
-			getchar();
-			
-		} while (valueMoves() != 1);
-		
-		insertValueInTable();
-		
-		if (testingMoves() == 1) {
-			break;
-		} else {
-			validTurn(); // troca o turno para o turno da IA
-			IAMove(); // faz a jogada da IA
-			insertValueInTable();
-			
-			if (testingMoves() == 1) {
-				break;
-			} else {
-				validTurn(); // troca o turno para o jogador novamente
-			}
-		}
-	
-	}
-
-	gameStatus();	
-
-	printf("\n\nPressione qualquer tecla para continuar...");
-	getchar();
-
-	strcpy(player1, playerName);
-	strcpy(player2, playerTwoName);
-}
-
-void IAMove(void) {
-	
-	playerMovement = testMoves();
-
-}
-
-// esta funcao ira retorna o movimento adequando para o computador jogar
-int testMoves() {
-	int counter;
-	int i;
-	// array com os valores de cada jogada para tomar a melhor decisao
-	// os valores do array estao de acordo com o array do tabuleiro
-	// por isso precisa apenas retornar o index do array.
-	int valuesOnRecursion[8];
-
-	// eh preciso marcar a opcao antes de chamar o algoritmo,
-	// afinal esse tipo de algorit ira partir de uma jogada livre no tabuleiro,
-	// cada jogada o algoritmo ira testar todas as possibilidades e retornar
-	// um numero baseado em cada resultado encontrado
-	// [1] -> vitoria
-	// [0] -> empate
-	// [-1] -> derrota
-	int copyTablePositions[8];
-	int profundidade;
-	int index;
-	int biggerThan;
-
-	for (counter = 0; counter <= 8; counter++) {
-		
-		if (tablePositions[counter] == 0) {
-			copyTablePositions[counter] = 2;
-			valuesOnRecursion[counter] = algorithRecursive(copyTablePositions, 2, 3);
-		}
-
-	}
-
-	for (counter = 0; counter <= 8; counter++) {
-		if (biggerThan < valuesOnRecursion[counter]) {
-			index = counter;
-			biggerThan = valuesOnRecursion[counter];
-		}
-	}
-
-	return index;
-}
-
-int algorithRecursive(int table[], int playerMove, int profundidade) {
-
-	int value;
-
-	if (playerMove == 2) {
-		playerMove = 1;
-	} else {
-		playerMove = 2;
-	}
-	
-	// implements min-max algorithm
-
-}
-
 void menuOptions(void) {
 	system("cls");
 	printMenu();
 
 	printf("1 - Jogar com dois jogadore\n");
-	printf("2 - Jogar contra a IA\n");
-	printf("3 - Fazer modificacoes no jogo\n");
-	printf("4 - Acessar historico das partidas\n");
-	printf("5 - Alterar o nome dos jogadores\n");
-	printf("6 - Alterar simbolo usados\n");
-	printf("7 - Encerrar o programa\n");
+	printf("2 - Fazer modificacoes no jogo\n");
+	printf("3 - Acessar historico das partidas\n");
+	printf("4 - Alterar o nome dos jogadores\n");
+	printf("5 - Alterar simbolo usados\n");
+	printf("6 - Encerrar o programa\n");
 }
 
 void closeProgram(void) {
@@ -586,6 +440,7 @@ void twoPlayersGame(void) {
 		do {
 		
 			system("cls");
+			printMenu();
 			printf("\nEstado atual da tabela\n");
 			printTable(symbolsOnMove[0], symbolsOnMove[1]);
 			printf("\nPosicoes da tabela\n");
@@ -598,7 +453,7 @@ void twoPlayersGame(void) {
 		
 		insertValueInTable();
 		
-		if (testingMoves() == 1) {
+		if (testingMoves(playerTurn) == 1) {
 			break;
 		} else {
 			validTurn();	
@@ -731,75 +586,39 @@ void insertValueInTable(void) {
 	
 }
 
+// index to print player winner
+void winnerPlayer(int idPlayer) {
+
+	if (idPlayer == 1) {
+		strcpy(winner, player1);
+	}
+
+	if (idPlayer == 2) {
+		strcpy(winner, player2);
+	}
+
+}
+
 // function to tests alls moves to win the game.
-int testingMoves(void) {
+int testingMoves(int playerTurn) {
 	
-	int endGame = FALSE; // validation if this game finished.
-	
-	if (tablePositions[0] == 1 && tablePositions[4] == 1 && tablePositions[8] == 1) {
-		endGame = TRUE;
-	} else {
-		if (tablePositions[0] == 2 && tablePositions[4] == 2 && tablePositions[8] == 2) {
-			endGame = TRUE;
-	    }
+	int endGame = 0; // validation if this game finished.
+
+	// alls possibles position in tic-tac-toe game
+	if (tablePositions[0] == playerTurn && tablePositions[4] == playerTurn && tablePositions[8] == playerTurn) endGame = 1;
+	if (tablePositions[2] == playerTurn && tablePositions[4] == playerTurn && tablePositions[6] == playerTurn) endGame = 1;
+	if (tablePositions[0] == playerTurn && tablePositions[1] == playerTurn && tablePositions[2] == playerTurn) endGame = 1;
+	if (tablePositions[3] == playerTurn && tablePositions[4] == playerTurn && tablePositions[5] == playerTurn) endGame = 1;
+	if (tablePositions[6] == playerTurn && tablePositions[7] == playerTurn && tablePositions[8] == playerTurn) endGame = 1;
+	if (tablePositions[0] == playerTurn && tablePositions[3] == playerTurn && tablePositions[6] == playerTurn) endGame = 1;
+	if (tablePositions[1] == playerTurn && tablePositions[4] == playerTurn && tablePositions[7] == playerTurn) endGame = 1;
+	if (tablePositions[2] == playerTurn && tablePositions[5] == playerTurn && tablePositions[6] == playerTurn) endGame = 1;
+	// if have winner in game, execute winnerPlayer to identify the winner to print in status match
+	if (endGame == 1) {
+		winnerPlayer(playerTurn);
 	}
-	
-	if (tablePositions[2] == 1 && tablePositions[4] == 1 && tablePositions[6] == 1) {
-		endGame = TRUE;
-	} else {
-		if (tablePositions[2] == 2 && tablePositions[4] == 2 && tablePositions[6] == 2) {
-			endGame = TRUE;
-	    }
-	} 
-		
-	if (tablePositions[0] == 1 && tablePositions[1] == 1 && tablePositions[2] == 1) {
-		endGame = TRUE;
-	} else {
-		if (tablePositions[0] == 2 && tablePositions[1] == 2 && tablePositions[2] == 2) {
-			endGame = TRUE;
-	    }
-	}
-	
-	if (tablePositions[3] == 1 && tablePositions[4] == 1 && tablePositions[5] == 1) {
-		endGame = TRUE;
-	} else {
-		if (tablePositions[3] == 2 && tablePositions[4] == 2 && tablePositions[5] == 2) {
-			endGame = TRUE;
-	    }
-	}
-	
-	if (tablePositions[6] == 1 && tablePositions[7] == 1 && tablePositions[8] == 1) {
-		endGame = TRUE;
-	} else {
-		if (tablePositions[6] == 2 && tablePositions[7] == 2 && tablePositions[8] == 2) {
-			endGame = TRUE;
-	    }
-	}
-	
-	if (tablePositions[0] == 1 && tablePositions[3] == 1 && tablePositions[6] == 1) {
-		endGame = TRUE;
-	} else {
-		if (tablePositions[0] == 2 && tablePositions[3] == 2 && tablePositions[6] == 2) {
-			endGame = TRUE;
-	    }
-	}
-	
-	if (tablePositions[1] == 1 && tablePositions[4] == 1 && tablePositions[7] == 1) {
-		endGame = TRUE;
-	} else {
-		if (tablePositions[1] == 2 && tablePositions[4] == 2 && tablePositions[7] == 2) {
-			endGame = TRUE;
-	    }
-	}
-	
-	if (tablePositions[2] == 1 && tablePositions[5] == 1 && tablePositions[6] == 1) {
-		endGame = TRUE;
-	} else {
-		if (tablePositions[2] == 2 && tablePositions[5] == 2 && tablePositions[6] == 2) {
-			endGame = TRUE;
-	    }
-	}
-	
+
+
 	return endGame;
 	
 }
@@ -833,7 +652,7 @@ void gameStatus(void) {
 	if (drawnCase() == 1) {
 		printf("\n\aOcorreu um empate empate!\n");
 	} else {	
-		printf("\n\a%s venceu o jogo!", printNamePlayer());
+		printf("\n\a%s venceu o jogo!", winner);
 		matchesHistoric[playerTurn] += 1; // For sum in matches historic
 	}
 
