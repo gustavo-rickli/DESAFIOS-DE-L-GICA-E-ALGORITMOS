@@ -1,11 +1,10 @@
 # JOGO DA VELHA EM C.
    ### FEATURES
-   - menu
-   - title
-   - custom console
-
-## TO-DO
-   - [ ] Add minmax algorithm to simulate IA
-   - [ ] Organize code into files
-   - [ ] Refatory
-   - [ ] Criar uma bilbioteca para o jogo 
+   -[x] menu
+   -[x] title in header
+   -[x] custom console
+   -[x] historic matches
+   -[x] two players matches
+   -[x] add custom player name
+   -[x] custom game icons
+   
