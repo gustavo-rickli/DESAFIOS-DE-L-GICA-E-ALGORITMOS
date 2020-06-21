@@ -1,10 +1,13 @@
 # JOGO DA VELHA EM C.
    ### FEATURES
-   -[x] menu
-   -[x] title in header
-   -[x] custom console
-   -[x] historic matches
-   -[x] two players matches
-   -[x] add custom player name
-   -[x] custom game icons
+   - menu
+   - title in header
+   - custom console
+   - historic matches
+   - two players matches
+   - add custom player name
+   - custom game icons
    
+   ##TODOS
+   -[] add Human vs computer option in menu
+   -[] add minimax algorithm
