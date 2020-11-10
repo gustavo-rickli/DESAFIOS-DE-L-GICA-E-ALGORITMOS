@@ -1,4 +1,4 @@
-# JOGO DA VELHA EM C.
+# SIMPLE TIC TAC TOE GAME CONSOLE APP
    ### FEATURES
    - menu
    - title in header
